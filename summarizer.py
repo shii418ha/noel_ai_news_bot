@@ -13,11 +13,10 @@ def summarize_article(title, summary, link, thumbnail=""):
 本文: {summary}
 
 出力例：
-【🐈N.O.E.L.のAI速報にゃ🐾】
+【🐈ノエルのAI速報にゃ🐾】
 ・にゃんと！◯◯企業が新しいAIツールを発表したにゃん！
 ・政府がAI規制に向けた新法案を提出したんだってにゃ！
-📌 要点をにゃんこ口調で簡潔に！
-📎 詳しくはこちらにゃ ➡️ {link}
+📎 詳しくはコチラにゃ ➡️ {link}
 """
 
     try:

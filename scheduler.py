@@ -3,7 +3,7 @@ from summarizer import summarize_article
 from discord_poster import post_to_discord
 from posted_tracker import load_posted_urls, save_posted_url
 import json
-from datetime import datetime, timedeltaAF
+from datetime import datetime, timedelta
 import dateutil.parser
 
 

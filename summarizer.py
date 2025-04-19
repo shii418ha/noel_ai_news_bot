@@ -1,38 +1,46 @@
 import openai
 import os
 
-# OpenAIクライアントを初期化
 client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 def summarize_article(title, summary, link, thumbnail=""):
     prompt = f"""
-以下はAIに関する最新ニュースです。
-これを Discord に投稿できるように、天才猫型Bot「ノエル」風に重要なポイントを1〜2文で簡潔に要約してください。
+以下はAI関連のニュース記事本文です。この内容から重要なポイントを5つ、簡潔に箇条書きでまとめてください。
+内容を正確に抽出し、表現はわかりやすく整えてください。
+タイトルや記事全体の要約ではなく、**具体的な内容のポイント抽出**にしてください。
 
-タイトル: {title}
-本文: {summary}
+【記事タイトル】
+{title}
 
-出力形式の例：
-【🐈ノエルのAI速報にゃ🐾】
-・にゃんと！◯◯企業が新しいAIツールを発表したにゃん！
-・政府がAI規制に向けた新法案を提出したんだってにゃ！
-📎 詳しくはコチラにゃ ➡️ {link}
+【記事本文】
+{summary}
+
+【出力形式】
+- 箇条書き1
+- 箇条書き2
+- 箇条書き3
+- 箇条書き4
+- 箇条書き5
 """
 
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=200,
+            max_tokens=300,
         )
 
-        summary_text = response.choices[0].message.content.strip()
+        points = response.choices[0].message.content.strip()
+
+        summary_text = f"""【🐾ノエルのAI速報にゃ！】
+{points}
+📎 詳しくはこちら ➡️ {link}"""
 
         return {
             "title": title,
             "summary": summary_text,
             "link": link,
-            "thumbnail": thumbnail  # 必要に応じて Discord 投稿側で使う
+            "thumbnail": thumbnail,
         }
 
     except Exception as e:

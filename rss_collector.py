@@ -18,6 +18,11 @@ def fetch_all_articles():
                 or entry.get("image", {}).get("url")
                 or ""
             )
+
+            # 🟡 Googleニュースだけは仮アイコンを入れる
+            if "news.google.com" in entry.get("link", "") and not thumbnail:
+                thumbnail = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Google_News_icon.png"
+
             article = {
                 "title": entry.get("title", ""),
                 "summary": entry.get("summary", entry.get("description", "")),

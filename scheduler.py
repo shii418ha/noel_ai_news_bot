@@ -22,7 +22,7 @@ def run():
 
     # 新しい順に並べ替え → 時間でフィルター
     articles = sorted(raw_articles, key=lambda x: x.get("published", ""), reverse=True)
-    articles = [a for a in articles if is_recent(a.get("published", ""), 120)]
+    articles = [a for a in articles if is_recent(a.get("published", ""), 1440)]
     print(f"💡 取得記事数（フィルター後）: {len(articles)}")
 
     posted_urls = load_posted_urls()

@@ -2,9 +2,9 @@ from rss_collector import fetch_all_articles
 from summarizer import summarize_article
 from discord_poster import post_to_discord
 from posted_tracker import load_posted_urls, save_posted_url
-
+import json
 from datetime import datetime, timedelta
-import dateutil.parser  # 必要なら requirements.txt に `python-dateutil` を追記
+import dateutil.parser
 
 # 記事の公開日が最近かどうかを判定
 def is_recent(published_str, threshold_minutes=1440):
@@ -15,12 +15,15 @@ def is_recent(published_str, threshold_minutes=1440):
         return False
 
 def run():
-    articles = fetch_all_articles()
+    raw_articles = fetch_all_articles()
+    print(f"💡 取得記事数（フィルター前）: {len(raw_articles)}")
 
-    # 新しい順に並べ替え
-    articles = sorted(articles, key=lambda x: x.get("published", ""), reverse=True)
+    # 👇 記事の中身を全部出力
+    for a in raw_articles:
+        print(json.dumps(a, indent=2, ensure_ascii=False))
 
-    # 直近〇分以内に公開された記事だけに絞る
+    # フィルター処理
+    articles = sorted(raw_articles, key=lambda x: x.get("published", ""), reverse=True)
     articles = [a for a in articles if is_recent(a.get("published", ""), 120)]
 
     posted_urls = load_posted_urls()

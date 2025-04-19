@@ -1,28 +1,24 @@
+import json
 import feedparser
 
-# 読み込むRSSフィードのリスト（今は仮）
-RSS_FEEDS = [
-    "https://openai.com/blog/rss.xml",
-    "https://ai.googleblog.com/feeds/posts/default",
-    "https://huggingface.co/blog/rss",
-]
+def load_rss_list(path="rss_list.json"):
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
-def fetch_latest_articles():
-    articles = []
-    for url in RSS_FEEDS:
-        feed = feedparser.parse(url)
-        for entry in feed.entries[:3]:  # 最新3件だけ取得
+def fetch_all_articles():
+    rss_list = load_rss_list()
+    all_articles = []
+
+    for rss_url in rss_list:
+        feed = feedparser.parse(rss_url)
+        for entry in feed.entries:
             article = {
-                "title": entry.title,
-                "link": entry.link,
-                "summary": entry.summary if "summary" in entry else "",
-                "published": entry.published if "published" in entry else "",
-                "source": url
+                "title": entry.get("title", ""),
+                "summary": entry.get("summary", entry.get("description", "")),
+                "link": entry.get("link", ""),
+                "published": entry.get("published", "")
             }
-            articles.append(article)
-    return articles
+            all_articles.append(article)
 
-if __name__ == "__main__":
-    data = fetch_latest_articles()
-    for item in data:
-        print(f"\n📰 {item['title']}\n🔗 {item['link']}\n📅 {item['published']}")
+    return all_articles
+__all__ = ["fetch_all_articles"]

@@ -1,17 +1,24 @@
+from rss_collector import fetch_all_articles
 from summarizer import summarize_article
 from discord_poster import post_to_discord
 
 def run():
-    test_article = {
-        "title": "OpenAI、新モデルGPT-4oをリリース",
-        "summary": "GPT-4oはテキスト、画像、音声を同時に処理できるマルチモーダルモデル。応答速度も大幅向上。",
-        "link": "https://openai.com/index/gpt-4o"
-    }
+    articles = fetch_all_articles()
+
+    # 記事が1件も取れなかったら終了
+    if not articles:
+        print("記事が見つかりませんでした。")
+        return
+
+    # 今回はとりあえず最新の1件だけ投稿
+    article = articles[0]
+
     summary = summarize_article(
-        test_article["title"],
-        test_article["summary"],
-        test_article["link"]
+        article["title"],
+        article["summary"],
+        article["link"]
     )
+
     post_to_discord(summary)
 
 if __name__ == "__main__":

@@ -1,48 +1,41 @@
+import openai
 import os
-from dotenv import load_dotenv
-from openai import OpenAI
 
-load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
+client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-client = OpenAI(api_key=api_key)
-
-def summarize_article(title: str, summary: str, link: str) -> str:
+def summarize_article(title, summary, link, thumbnail=""):
     prompt = f"""
+
 以下はAIに関する最新ニュースです。
-これを Discord に投稿できるように、天才猫型Bot「ノエル」風の文章にまとめてください。
+これを Discord に投稿できるように、天才猫型Bot「ノエル」風に重要なポイントを1〜2文で簡潔に要約してください。
 
-# ニュース記事
 タイトル: {title}
-本文要約: {summary}
+本文: {summary}
 
-# 出力フォーマット
-【🧠 AI速報にゃ！】
-◤ {title} ◢
-
+出力例：
+【🐈N.O.E.L.のAI速報にゃ🐾】
+・にゃんと！◯◯企業が新しいAIツールを発表したにゃん！
+・政府がAI規制に向けた新法案を提出したんだってにゃ！
 📌 要点をにゃんこ口調で簡潔に！
-📎 詳しくはこちら ➡️ {link}
+📎 詳しくはこちらにゃ ➡️ {link}
+"""
 
-Powered by 🐾 N.O.E.L.
-    """
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=200
+        )
 
-    chat_completion = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "あなたは明るく知的な天才猫型AIです。ニュース要約が得意です。"},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_tokens=300
-    )
+        summary_text = response.choices[0].message.content.strip()
 
-    return chat_completion.choices[0].message.content
+        return {
+            "title": title,
+            "summary": summary_text,
+            "link": link,
+            "thumbnail": thumbnail
+        }
 
-# テスト
-if __name__ == "__main__":
-    test = summarize_article(
-        "OpenAI、新モデルGPT-4oをリリース",
-        "GPT-4oはテキスト、画像、音声を同時に処理できるマルチモーダルモデル。応答速度も大幅向上。",
-        "https://openai.com/index/gpt-4o"
-    )
-    print(test)
+    except Exception as e:
+        print(f"❌ 要約エラー: {e}")
+        return None

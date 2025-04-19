@@ -1,32 +1,19 @@
-import os
 import requests
-from dotenv import load_dotenv
+import os
 
-load_dotenv()
-DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
-def post_to_discord(content: str):
-    data = {
-        "content": content
+def post_to_discord(summary_data):
+    embed = {
+        "title": summary_data["title"],
+        "description": summary_data["summary"],
+        "url": summary_data["link"]
     }
-    response = requests.post(DISCORD_WEBHOOK_URL, json=data)
-    if response.status_code == 204:
-        print("✅ Discordに投稿成功！")
-    else:
-        print(f"❌ 投稿失敗！ステータスコード: {response.status_code}")
-        print(response.text)
 
-# テスト用
-if __name__ == "__main__":
-    test_message = """
-【🧠 AI速報にゃ！】
-◤ OpenAI、新モデルGPT-4oをリリースにゃ ◢
+    if summary_data.get("thumbnail"):
+        embed["image"] = {"url": summary_data["thumbnail"]}
 
-GPT-4oはテキスト、画像、音声を同時に処理できるスーパーにゃんこモデルにゃ！
-応答速度もアップして、にゃんともすごい進化なのにゃ！
+    content = {"embeds": [embed]}
 
-📎 https://openai.com/index/gpt-4o
-
-Powered by 🐾 N.O.E.L.
-"""
-    post_to_discord(test_message)
+    response = requests.post(DISCORD_WEBHOOK_URL, json=content)
+    response.raise_for_status()

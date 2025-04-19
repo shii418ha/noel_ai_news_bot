@@ -12,23 +12,22 @@ def fetch_all_articles():
     for rss_url in rss_list:
         feed = feedparser.parse(rss_url)
         for entry in feed.entries:
-            thumbnail = (
-                entry.get("media_thumbnail", [{}])[0].get("url")
-                or entry.get("media_content", [{}])[0].get("url")
-                or entry.get("image", {}).get("url")
-                or ""
+            # タイトル・リンク
+            title = entry.get("title", "")
+            link = entry.get("link", "")
+
+            # 要約候補（順にチェック）
+            summary = (
+                entry.get("content", [{}])[0].get("value", "") or  # 最も詳細
+                entry.get("summary", "") or
+                entry.get("description", "")
             )
 
-            # 🟡 Googleニュースだけは仮アイコンを入れる
-            if "news.google.com" in entry.get("link", "") and not thumbnail:
-                thumbnail = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Google_News_icon.png"
-
             article = {
-                "title": entry.get("title", ""),
-                "summary": entry.get("summary", entry.get("description", "")),
-                "link": entry.get("link", ""),
-                "published": entry.get("published", ""),
-                "thumbnail": thumbnail
+                "title": title,
+                "summary": summary,
+                "link": link,
+                "published": entry.get("published", "")
             }
             all_articles.append(article)
 

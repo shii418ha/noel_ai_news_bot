@@ -10,6 +10,11 @@ def load_posted_urls():
         return json.load(f)
 
 def save_posted_url(url):
+    # 🔽 ファイルがなければ空のリストで新規作成
+    if not os.path.exists(POSTED_URLS_PATH):
+        with open(POSTED_URLS_PATH, "w", encoding="utf-8") as f:
+            json.dump([], f, ensure_ascii=False, indent=2)
+
     posted = load_posted_urls()
     posted.append(url)
     with open(POSTED_URLS_PATH, "w", encoding="utf-8") as f:

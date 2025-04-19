@@ -1,19 +1,19 @@
-import json
 import os
+import json
 
-POSTED_FILE = "posted_articles.json"
+# 永続ストレージのパス
+POSTED_URLS_PATH = "/mnt/data/posted_urls.json"
 
 def load_posted_urls():
-    if not os.path.exists(POSTED_FILE):
-        return set()
-    with open(POSTED_FILE, "r", encoding="utf-8") as f:
-        try:
-            return set(json.load(f))
-        except json.JSONDecodeError:
-            return set()
+    if not os.path.exists(POSTED_URLS_PATH):
+        return []
+
+    with open(POSTED_URLS_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 def save_posted_url(url):
-    posted = load_posted_urls()
-    posted.add(url)
-    with open(POSTED_FILE, "w", encoding="utf-8") as f:
-        json.dump(list(posted), f, ensure_ascii=False, indent=2)
+    urls = load_posted_urls()
+    urls.append(url)
+
+    with open(POSTED_URLS_PATH, "w", encoding="utf-8") as f:
+        json.dump(urls, f, indent=2, ensure_ascii=False)

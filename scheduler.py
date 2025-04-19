@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import dateutil.parser  # 必要なら requirements.txt に `python-dateutil` を追記
 
 # 記事の公開日が最近かどうかを判定
-def is_recent(published_str, threshold_minutes=120):
+def is_recent(published_str, threshold_minutes=1440):
     try:
         published_dt = dateutil.parser.parse(published_str)
         return (datetime.utcnow() - published_dt).total_seconds() < threshold_minutes * 60
@@ -29,6 +29,8 @@ def run():
     print(f"📰 最新記事取得: {len(articles)}件 / 投稿済み: {len(posted_urls)}件")
 
     for article in articles:
+        print(f"🔍 記事確認: {article['title']} / 投稿日: {article['published']}")
+
         if article["link"] in posted_urls:
             print(f"⏭️ スキップ: {article['title']}")
             continue

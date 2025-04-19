@@ -5,7 +5,12 @@ from posted_tracker import load_posted_urls, save_posted_url
 import json
 from datetime import datetime, timezone
 import dateutil.parser
+import os
 
+if os.getenv("STOP_NOW") == "1":
+    print("🔕 自動実行停止モードです。")
+    exit()
+    
 # 記事の公開日が最近かどうかを判定
 def is_recent(published_str, threshold_minutes=2880):  # ← 2日分（48時間）
     try:

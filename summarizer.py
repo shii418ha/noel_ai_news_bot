@@ -5,42 +5,47 @@ client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 def summarize_article(title, summary, link, thumbnail=""):
     prompt = f"""
-以下はAI関連のニュース記事本文です。この内容から重要なポイントを5つ、簡潔に箇条書きでまとめてください。
-内容を正確に抽出し、表現はわかりやすく整えてください。
-タイトルや記事全体の要約ではなく、**具体的な内容のポイント抽出**にしてください。
+以下はAIに関する最新ニュースにゃ。
+これを Discord に投稿できるように、天才猫型Bot「ノエル」風に要点を**5つ**、箇条書きでかんたんに解説してにゃ。
+ポイントは、
+- 記事の重要な内容をちゃんと拾って、
+- ノエルらしいちょっとゆる〜い語り口で、
+- でも内容はわかりやすくしてにゃ！
 
-【記事タイトル】
+【元タイトル】  
 {title}
 
-【記事本文】
+【本文（要約用）】  
 {summary}
 
-【出力形式】
-- 箇条書き1
-- 箇条書き2
-- 箇条書き3
-- 箇条書き4
-- 箇条書き5
+【リンク】  
+{link}
+
+【出力例（口調の雰囲気）】
+【🐈ノエルのAI速報にゃ！】
+・◯◯っていうAIが新しく発表されたらしいにゃ〜  
+・人間のお仕事がまたひとつラクになるかも…！？  
+・〇〇社が開発したこの技術、注目度バツグンにゃ！  
+・業界の常識がひっくり返るかもって話もあるんだにゃ〜  
+🐾詳しくはリンクをチェックにゃ → {link}
+
+本文はこちらのURLにゃ ➡️ {link}
 """
 
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=300,
+            max_tokens=400
         )
 
-        points = response.choices[0].message.content.strip()
-
-        summary_text = f"""【🐾ノエルのAI速報にゃ！】
-{points}
-📎 詳しくはこちら ➡️ {link}"""
+        summary_text = response.choices[0].message.content.strip()
 
         return {
             "title": title,
             "summary": summary_text,
             "link": link,
-            "thumbnail": thumbnail,
+            "thumbnail": thumbnail
         }
 
     except Exception as e:
